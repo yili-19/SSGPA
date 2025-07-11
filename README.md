@@ -6,9 +6,11 @@ We were impressed by the outstanding performance reported in the SSGPA paper, wh
 1. **Contradictory Model Structure Descriptions**: The paper presents conflicting accounts of the visual feature extraction pipeline. The architecture diagram suggests the use of a frozen ViT with a Fusion Change Adapter Encoder (similar to VIR-VLFM’s Fused Adapter), while the main text also mentions the use of ResNet followed by self-attention for global-local relation learning—closer to CNN+Transformer approaches. Moreover, the experiment section references both ResNet-101 and EVA-ViT-g/14 as backbones. These discrepancies make it unclear which pipeline was actually used.
 2. **GPU Memory Usage Inconsistent with Claimed Setup**: The paper claims all experiments were run on a single RTX 3090 GPU. However, using either backbone (ResNet or EVA-ViT-g/14) with Vicuna-7B far exceeds the memory limits of a 24GB 3090, even with half-precision and memory optimizations. Our reproduction attempts required 30–70 GB of GPU memory, calling into question the feasibility of the claimed hardware configuration.
 3. **Unclear Vision-Language Integration**: The model feeds image features directly into a frozen Vicuna-7B without mention of any bridging components like Q-Former, MLP projection layers, or fine-tuning. Without a cross-modal alignment module or adaptation, it is unclear how the model achieves high-quality generation, especially with significantly better CIDEr and SPICE scores than prior work.
-4. **Unrealistic Visualization Quality**: The change localization visualizations in the paper exhibit highly regular, accurate contours that differ from the typical outputs seen in related works. This suggests the possible use of post-processing or heuristic refinement strategies that were not disclosed.
+4. **Unrealistic Visualization Quality**: The change localization visualizations in the paper exhibit highly regular, accurate contours that differ from the typical outputs seen in related works. This suggests the possible use of post-processing or heuristic refinement strategies that were not disclosed.\\
 We initially reached out to the authors requesting access to the code implementation. However, due to certain constraints, the authors indicated that the code cannot be made publicly available at this time. Therefore, we attempted to reproduce the paper's results based on the provided descriptions. During this process, we encountered several technical details that seem challenging to reconcile with standard practices, and some key implementation parameters were missing from the paper. We filled in these gaps based on our understanding and commonly used configurations in the field
 ---
+## GPU usage
+In terms of GPU memory usage, ViT-based scheme consumes nearly 70 GB, while Resnet-ViT scheme exceeds 30 GB on an 80 GB A800 GPU.
 ## Results on CLEVR-Change
 | Method                        | BLEU-4                     | METEOR                     | CIDEr                      | ROUGE-L                    |
 |------------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
@@ -38,11 +40,11 @@ We initially reached out to the authors requesting access to the code implementa
 
 We follow the same environment setup as FINER-MLLM:
 
-	•	Python 3.9
-	•	PyTorch and torchvision.
-	•	huggingface
-	•	lavis
-	•	loralib
+•	Python 3.9
+•	PyTorch and torchvision.
+•	huggingface
+•	lavis
+•	loralib
 
 
 ### 2. Data Preparation

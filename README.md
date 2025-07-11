@@ -1,26 +1,36 @@
-# 🔁 Reproduction of "Revisiting Change Captioning from Self-supervised Global-Part Alignment (AAAI 2025)" based on FINER-MLLM (ACM MM 2024)
+# 🔁 Reproduction of "Revisiting Change Captioning from Self-supervised Global-Part Alignment (AAAI 2025)"
 
-This repository provides the **reproduction of "Contrastive Change Captioning with Cross-modal Attention" (AAAI 2025)** using the codebase of **[FINER-MLLM (ACM MM 2024)](https://openreview.net/pdf/481cf588998fae1e01a42765ae7154fa08b51e85.pdf)**.
+This repository provides the **reproduction of "Contrastive Change Captioning with Cross-modal Attention" (AAAI 2025)**.
 
-> 🛠️ This work is based on the official implementation of FINER-MLLM and modifies its structure and training procedure to align with the design in "Revisiting Change Captioning from Self-supervised Global-Part Alignment".
+We were impressed by the outstanding performance reported in the SSGPA paper, which shows significant improvements over existing methods. However, there are some aspects in the workflow of this method that may require further clarification or refinement:
+1. **Contradictory Model Structure Descriptions**: The paper presents conflicting accounts of the visual feature extraction pipeline. The architecture diagram suggests the use of a frozen ViT with a Fusion Change Adapter Encoder (similar to VIR-VLFM’s Fused Adapter), while the main text also mentions the use of ResNet followed by self-attention for global-local relation learning—closer to CNN+Transformer approaches. Moreover, the experiment section references both ResNet-101 and EVA-ViT-g/14 as backbones. These discrepancies make it unclear which pipeline was actually used.
+2. **GPU Memory Usage Inconsistent with Claimed Setup**: The paper claims all experiments were run on a single RTX 3090 GPU. However, using either backbone (ResNet or EVA-ViT-g/14) with Vicuna-7B far exceeds the memory limits of a 24GB 3090, even with half-precision and memory optimizations. Our reproduction attempts required 30–70 GB of GPU memory, calling into question the feasibility of the claimed hardware configuration.
+3. **Unclear Vision-Language Integration**: The model feeds image features directly into a frozen Vicuna-7B without mention of any bridging components like Q-Former, MLP projection layers, or fine-tuning. Without a cross-modal alignment module or adaptation, it is unclear how the model achieves high-quality generation, especially with significantly better CIDEr and SPICE scores than prior work.
+4. **Unrealistic Visualization Quality**: The change localization visualizations in the paper exhibit highly regular, accurate contours that differ from the typical outputs seen in related works. This suggests the possible use of post-processing or heuristic refinement strategies that were not disclosed.
+
+We initially reached out to the authors requesting access to the code implementation. However, due to certain constraints, the authors indicated that the code cannot be made publicly available at this time. Therefore, we attempted to reproduce the paper's results based on the provided descriptions. During this process, we encountered several technical details that seem challenging to reconcile with standard practices, and some key implementation parameters were missing from the paper. We filled in these gaps based on our understanding and commonly used configurations in the field.
+---
+##  Results on clevr-change
+| Method                        | BLEU-4                     | METEOR                     | CIDEr                      | ROUGE-L                    |
+|------------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| SCORER                    | 56.3                       | 41.2                       | 126.8                      | 74.5                       |
+| VIR-VLFM                  | 58.2                       | 42.6                       | 153.4                      | 78.9                       |
+| SSGPA (reported)             | 60.9                       | 44.2                       | 159.1                      | 80.2                       |
+| Reproduction - <br>(ViT-based) | 33.5 <br> *(↓44.99%)*     | 17.0 <br> *(↓61.54%)*     | 65.3 <br> *(↓58.74%)*      | 50.3 <br> *(↓37.29%)*      |
+| Reproduction - <br>(ResNet + ViT) | 32.4 <br> *(↓53.20%)*     | 14.5 <br> *(↓67.19%)*     | 91.4 <br> *(↓42.45%)*      |
+
+## Results on Spot-the-diff
+| Method                        | BLEU-4                     | METEOR                     | CIDEr                      | ROUGE-L                    |
+|------------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| SCORER [7]                   | 10.2                       | 12.2                       | 38.9                       | -                          |
+| VIR-VLFM [1]                 | 12.2                       | 15.3                       | 48.9                       | 36.2                       |
+| SSGPA (reported)             | 13.5                       | 16.0                       | 63.4                       | 42.7                       |
+| Reproduction - Scheme (a)<br>(ViT-based)       | 9.0 <br> *(↓33.33%)*     | 11.7 <br> *(↓26.88%)*     | 29.7 *(↓53.15%)*     | 30.7 <br> *(↓28.10%)*     |
+| Reproduction - Scheme (b)<br>(ResNet + ViT)    | 9.6 <br> *(↓28.89%)*     | 11.4 <br> *(↓28.75%)*     | 30.5 *(↓51.89%)*     | 30.1 <br> *(↓29.51%)*     |
 
 ---
-
 ## 📄 Reference
-
-- **Base Code**: [FINER-MLLM (ACM MM 2024)](https://github.com/izhangxian/FINER-MLLM)
-- **Target Paper**: *Revisiting Change Captioning from Self-supervised Global-Part Alignment*, AAAI 2025. [[PDF Link]](https://ojs.aaai.org/index.php/AAAI/article/view/32629) 
-
----
-
-## 🔧 Major Modifications
-
-To reproduce the AAAI 2025 method, we made the following changes based on FINER-MLLM:
-- Retain only the **base BLIP model** from FINER-MLLM and remove all other modules to match the settings in the AAAI 2025 paper. 
-- Introduced a **Fusion Change Adapter Encoder module** to fuse visual and textual features, as described in the AAAI 2025 paper.
-
-> Note: We keep the data preprocessing, evaluation pipeline, and overall training setup consistent with FINER-MLLM to ensure comparability.
-
+- **Paper**: *Revisiting Change Captioning from Self-supervised Global-Part Alignment*, AAAI 2025. [[PDF Link]](https://ojs.aaai.org/index.php/AAAI/article/view/32629) 
 ---
 
 ## 🚀 Getting Started
@@ -68,16 +78,11 @@ bash scripts/resnet_train_spot.sh
 ```
 
 ### 4. Citation
-@inproceedings{zhang2024finermllm,
-  title={Differential-Perceptive and Retrieval-Augmented {MLLM} for Change Captioning},
-  author={Zhang, Xian and Wen, Haokun and Wu, Jianlong and Qin, Pengda and Xue, Hui and Nie, Liqiang},
-  booktitle={ACM Multimedia},
-  year={2024}
-}
-
+```
 @inproceedings{lv2025revisiting,
   title={Revisiting Change Captioning from Self-supervised Global-Part Alignment},
   author={Feixiao Lv, Rui Wang, Lihua Jing},
   booktitle={AAAI},
   year={2025}
 }
+```

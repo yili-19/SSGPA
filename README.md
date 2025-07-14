@@ -8,9 +8,9 @@ I contacted the authors via email twice to request access to the code and pretra
 
 Below, I summarize the main challenges I encountered during the review and reproduction process:
 	
-  •	**Inconsistencies in the Model Architecture**: The paper describes conflicting visual pipelines. The architecture figure suggests a frozen ViT with a Fusion Change Adapter Encoder (similar to VIR-VLFM), while the main text also refers to a ResNet backbone with a global-local attention module. Moreover, the experiment section mentions both ResNet-101 and EVA-ViT-g/14 as backbones, making it unclear which setup was actually used.
+  •	**Inconsistencies in the Model Architecture**: The paper describes conflicting visual pipelines. The architecture figure suggests a frozen ViT with a Fusion Change Adapter Encoder (similar to VIR-VLFM[1]), while the main text also refers to a ResNet backbone with a global-local attention module. Moreover, the experiment section mentions both ResNet-101 and EVA-ViT-g/14 as backbones, making it unclear which setup was actually used.
 	
-  •	**GPU Usage and Training Requirements**: The paper claims that all experiments were conducted on a single RTX 3090 (24GB). However, our attempts to replicate the setup—using either ResNet or EVA-ViT-g/14 with Vicuna-7B—consistently required 30–70 GB of GPU memory, even with mixed precision and memory optimizations. This raises concerns about the feasibility of the reported hardware configuration.
+  •	**GPU Usage and Training Requirements**: The paper claims that all experiments were conducted on a single RTX 3090 (24GB). However, our attempts to replicate the setup—using EVA-ViT-g/14 with Vicuna-7B—consistently required 30–70 GB of GPU memory, even with mixed precision and memory optimizations. This raises concerns about the feasibility of the reported hardware configuration.
 
 	
   •	**Difficulty Interpreting the Consistency Constraint**: The consistency mechanism described in the paper is not formally defined, and its practical implementation remains vague, which complicates reproduction.
@@ -93,12 +93,19 @@ bash scripts/resnet_train__clevr.sh
 bash scripts/resnet_train_spot.sh
 ```
 
-### 4. Citation
+### 4. Reference
 ```
-@inproceedings{lv2025revisiting,
-  title={Revisiting Change Captioning from Self-supervised Global-Part Alignment},
-  author={Feixiao Lv, Rui Wang, Lihua Jing},
-  booktitle={AAAI},
-  year={2025}
+@article{lu2023viewpoint,
+  title={Viewpoint integration and registration with vision language foundation model for image change understanding},
+  author={Lu, Xiaonan and Yuan, Jianlong and Niu, Ruigang and Hu, Yuan and Wang, Fan},
+  journal={arXiv preprint arXiv:2309.08585},
+  year={2023}
+}
+@inproceedings{tu2023self,
+  title={Self-supervised cross-view representation reconstruction for change captioning},
+  author={Tu, Yunbin and Li, Liang and Su, Li and Zha, Zheng-Jun and Yan, Chenggang and Huang, Qingming},
+  booktitle={Proceedings of the IEEE/CVF international conference on computer vision},
+  pages={2805--2815},
+  year={2023}
 }
 ```

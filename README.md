@@ -45,9 +45,6 @@ In terms of GPU memory usage, ViT-based scheme consumes nearly 70 GB, while Resn
 | Reproduction - (ResNet + ViT)| 9.6  **(↓28.89%)**         | 11.4  **(↓28.75%)**        | 30.5 **(↓51.89%)**         | 30.1  **(↓29.51%)**        |
 
 ---
-## 📄 Reference
-- **Paper**: *Revisiting Change Captioning from Self-supervised Global-Part Alignment*, AAAI 2025. [[PDF Link]](https://ojs.aaai.org/index.php/AAAI/article/view/32629) 
----
 
 ## 🚀 Getting Started
 

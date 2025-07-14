@@ -10,7 +10,7 @@ Below, I summarize the main challenges I encountered during the review and repro
 	
   •	**Inconsistencies in the Model Architecture**: The paper describes conflicting visual pipelines. The architecture figure suggests a frozen ViT with a Fusion Change Adapter Encoder (similar to VIR-VLFM [2]), while the main text also refers to a ResNet backbone with a global-local attention module. Moreover, the experiment section mentions both ResNet-101 and EVA-ViT-g/14 as backbones, making it unclear which setup was actually used.
 	
-  •	**GPU Usage and Training Requirements**: The paper claims that all experiments were conducted on a single RTX 3090 (24GB). However, our attempts to replicate the setup—using EVA-ViT-g/14 with Vicuna-7B—consistently required 30–70 GB of GPU memory, even with mixed precision and memory optimizations. This raises concerns about the feasibility of the reported hardware configuration.
+  •	**GPU Usage and Training Requirements**: The paper claims that all experiments were conducted on a single RTX 3090 (24GB). However, our attempts to replicate the setup using EVA-ViT-g/14 with Vicuna-7B—consistently and setting the batch size to 2 required 30–70 GB of GPU memory, even with mixed precision and memory optimizations. This raises concerns about the feasibility of the reported hardware configuration.
 
 	
   •	**Difficulty Interpreting the Consistency Constraint**: The consistency mechanism described in the paper is not formally defined, and its practical implementation remains vague, which complicates reproduction.
@@ -19,7 +19,7 @@ Below, I summarize the main challenges I encountered during the review and repro
 
   •	**Unrealistic Visualization Quality**: The visualizations of change localization in the paper show highly accurate and regular contours that differ from typical results in this task. This suggests the possible use of post-processing or additional heuristics, which were not disclosed.
 	
-  •	**Missing Implementation Details**: Several key settings—such as input resolution, loss weight configuration, and training schedule—are missing or only briefly mentioned.
+  •	**Missing Implementation Details**: Several key settings are missing or only briefly mentioned such as input resolution, batch size, loss weight configuration, and training schedule.
 
 In light of these issues, I attempted to reproduce the results based on the paper’s descriptions and my own understanding, using commonly adopted practices in the field. I welcome any corrections or feedback from the authors. The following sections provide a detailed analysis of these issues and present the results from my reproduction attempt.
 
